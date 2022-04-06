@@ -1,60 +1,67 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Injectable,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
-import { Movie } from '../../models/movie';
-import { User } from '../../models/user';
+import { Movie } from '../models/movie';
+import { User } from '../models/user';
 import { MovieService } from '../services/movie.service';
 
 @Injectable({ providedIn: 'root' })
 @Component({
   selector: 'app-all-movies',
   templateUrl: './all-movies.component.html',
+  styleUrls: ['./all-movies.component.scss'],
 })
-export class AllMoviesComponent implements OnInit {
+export class AllMoviesComponent implements OnInit, AfterViewInit {
   users?: User[];
-  private subscription : Subscription[] = [];
-  page : number
-  pageSize : number;
-  collectionSize :number;
-  movies? : Movie[];
-  moviesView?: Movie[];
-  constructor(private movieService : MovieService ){
-    this.page = 1;
-    this.pageSize = 10;
-    this.collectionSize = 0;
+  private subscription: Subscription[] = [];
+  dataSource: MatTableDataSource<Movie> = new MatTableDataSource<Movie>();
+  displayedColumns: string[] = [
+    'movieId',
+    'movieName',
+    'movieYear',
+    'genre',
+    'movieDescription',
+    'overallRating',
+  ];
+  pageOptions: number[] = [15, 30, 45];
+  @ViewChild(MatPaginator)
+  paginator!: MatPaginator;
 
+  constructor(private movieService: MovieService) {}
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
   }
-  
 
   ngOnInit(): void {
-    this.subscription.push(this.movieService.getAllUsers().subscribe(
-      {
-        next: (users : User[]) => {
-          this.users = users
-        }
-      }
-    ))
+    this.subscription.push(
+      this.movieService.getAllUsers().subscribe({
+        next: (users: User[]) => {
+          this.users = users;
+        },
+      })
+    );
 
     this.subscription.push(
       this.movieService.getAllMovies().subscribe({
-        next: (movies : Movie[]) => {
-          this.movies = movies;
-          this.collectionSize = movies.length;
-          this.refreshMovieView()
-        }
+        next: (movies: Movie[]) => {
+          this.updateDataSource(movies);
+        },
       })
-    )
+    );
   }
 
-  public refreshMovieView() : void{
-    this.moviesView = this.movies?.map((country, i) => ({id: i + 1, ...country}))
-    .slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
+  updateDataSource(movies: Movie[]): void {
+    this.dataSource.data = movies;
   }
 
-
-  public printInfo(movie : Movie): void{
-    console.log(movie)
+  public onRowSelected(row: Movie) {
+    console.log(row);
   }
-  
 }
-
-
