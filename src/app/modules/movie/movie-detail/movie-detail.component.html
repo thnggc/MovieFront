@@ -1,0 +1,16 @@
+<div class="container">
+  <div class="row">
+    <div>{{ loadedMovie?.movieName }} - {{ loadedMovie?.overallRating }}</div>
+    <div>
+      {{ loadedMovie?.movieDescription }}
+    </div>
+    <div>
+      {{ loadedMovie?.movieYear }}
+    </div>
+  </div>
+
+  <app-ratings
+    [movie]="loadedMovie"
+    (onSaveEvent)="loadData($event)"
+  ></app-ratings>
+</div>

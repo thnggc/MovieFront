@@ -1,0 +1,49 @@
+<div class="container">
+  <div class="row">
+    <div *ngIf="movie">
+      <strong> Ratings </strong>
+      <div *ngFor="let rating of movie?.ratings">
+        {{ rating?.movieUser?.displayName }}
+        {{ rating?.ratingComment }}
+        {{ rating?.ratingScore }}
+      </div>
+
+      <form [formGroup]="form">
+        <div class="d-flex column-nowrap flex-column">
+          <div>
+            <mat-form-field class="col-sm-8" appearance="fill">
+              <mat-label>Leave a comment</mat-label>
+              <textarea
+                matInput
+                placeholder="Comment"
+                [formControl]="form?.get('ratingComment')"
+                required
+              ></textarea>
+            </mat-form-field>
+          </div>
+          <div class="flex-row row-nowrap">
+            <mat-form-field class="col-sm-1" appearance="fill">
+              <mat-label>Rating</mat-label>
+              <mat-select [formControl]="form?.get('ratingScore')" required>
+                <mat-option *ngFor="let score of scores" [value]="score">
+                  {{ score }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>User</mat-label>
+              <mat-select [formControl]="form?.get('userId')" required>
+                <mat-option *ngFor="let user of users" [value]="user.userId">
+                  {{ user.displayName }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex-row row-nowrap">
+            <button (click)="save()" mat-raised-button>Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
