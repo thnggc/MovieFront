@@ -1,7 +1,6 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
-
-export class Constants{
-    public baseUrl : string = "http://localhost:8081/"
+export class Constants {
+  public baseUrl: string = 'https://greg-first-app-test.herokuapp.com/';
 }

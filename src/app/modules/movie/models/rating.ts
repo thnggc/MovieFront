@@ -1,5 +1,8 @@
+import { User } from './user';
+
 export interface Rating {
-  ratingId: number;
+  ratingId?: number;
   ratingScore: number;
-  ratingComment: number;
+  ratingComment?: number;
+  movieUser?: User;
 }

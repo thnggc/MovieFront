@@ -1,3 +1,4 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import {
   AfterViewInit,
   Component,
@@ -6,7 +7,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Movie } from '../models/movie';
 import { User } from '../models/user';
@@ -23,7 +26,6 @@ export class AllMoviesComponent implements OnInit, AfterViewInit {
   private subscription: Subscription[] = [];
   dataSource: MatTableDataSource<Movie> = new MatTableDataSource<Movie>();
   displayedColumns: string[] = [
-    'movieId',
     'movieName',
     'movieYear',
     'genre',
@@ -33,13 +35,18 @@ export class AllMoviesComponent implements OnInit, AfterViewInit {
   pageOptions: number[] = [15, 30, 45];
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
-
-  constructor(private movieService: MovieService) {}
+  @ViewChild(MatSort) sort: MatSort;
+  constructor(
+    private movieService: MovieService,
+    private router: Router,
+    private _liveAnnouncer: LiveAnnouncer
+  ) {}
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
-  ngOnInit(): void {
+  private loadData(): void {
     this.subscription.push(
       this.movieService.getAllUsers().subscribe({
         next: (users: User[]) => {
@@ -57,11 +64,23 @@ export class AllMoviesComponent implements OnInit, AfterViewInit {
     );
   }
 
+  ngOnInit(): void {
+    this.loadData();
+  }
+
   updateDataSource(movies: Movie[]): void {
     this.dataSource.data = movies;
   }
 
   public onRowSelected(row: Movie) {
-    console.log(row);
+    this.router.navigate(['/movie', row.movieId]);
+  }
+
+  announceSortChange(sortState: Sort) {
+    if (sortState.direction) {
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
+    }
   }
 }
